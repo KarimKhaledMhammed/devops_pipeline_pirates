@@ -1,1 +1,3 @@
 cosign.key
+venv/
+__pycache__/

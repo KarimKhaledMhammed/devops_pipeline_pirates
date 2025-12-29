@@ -1,4 +1,11 @@
-# Global Docker Hub Credentials
+# --- Global Docker Hub Credentials (REQUIRED for template) ---
+imageCredentials:
+  registry: "https://index.docker.io/v1/"
+  username: "karimkhaled02"
+  password: ""  # Passed via CLI or ArgoCD
+  email: "Karimkhaledmohammed@gmail.com"
+
+# This tells Pods to USE the secret we created
 imagePullSecrets:
   - name: regcred
 
@@ -7,34 +14,31 @@ backend:
   enabled: true
   resources:
     requests:
-      cpu: "100m"   # 0.1 CPU
+      cpu: "100m"
       memory: "128Mi"
     limits:
-      cpu: "500m"   # 0.5 CPU
+      cpu: "500m"
       memory: "256Mi"
 
-  # --- ADD THIS: Autoscaling Configuration ---
+  # Autoscaling: Scales pods based on CPU usage
   autoscaling:
     enabled: true
     minReplicas: 1
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
     targetMemoryUtilizationPercentage: 80
+
   image:
     repository: karimkhaled02/pipeline-pirates
-    tag: "backend-v1"
-    # SECURITY: Paste the exact sha256 digest from 'docker inspect' here
-    digest: "sha256:ee4586ff51aa77e4775896274f2d026d54c790a46ad6d9f4ef81591aa77ad271"
+    tag: "backend-latest"
     pullPolicy: Always
   
   replicaCount: 1
   service:
     port: 8000
   
-  # Database Connection Details
   env:
-    # Full DNS name: service-name.namespace.svc.cluster.local
-    dbHost: "pirates-db-postgresql.pirates-db-ns.svc.cluster.local"
+    dbHost: "pirates-backend-pirates-db.pirates-backend-ns.svc.cluster.local" # <--- Updated to match standard Helm alias DNS
     dbUser: "postgres"
     dbName: "pirates_db"
 
@@ -43,17 +47,20 @@ frontend:
   enabled: true
   image:
     repository: karimkhaled02/pipeline-pirates
-    tag: "frontend-v2"
-    # SECURITY: Paste the exact sha256 digest here
-    digest: "sha256:a8fccc915b0269bc6eecf96b7c403d14329e581d4978a854037dcd970a98159b"
+    tag: "frontend-latest"
     pullPolicy: Always
+  
+  replicaCount: 1
+  service:
+    port: 80
+    
+  # Tells Nginx where the Backend is
+  backendUrl: "http://pirates-backend-backend.pirates-backend-ns.svc.cluster.local:8000"
+
   ingress:
       enabled: true
       host: "pirates.local"
       tlsSecret: "pirates-tls-secret"
-      
-      # Paste the RAW (text) content of your files here.
-      # Use the pipe | to allow multi-line strings.
       certificate: |
         -----BEGIN CERTIFICATE-----
         MIIDETCCAfmgAwIBAgIUVIUZZqjNglNfhH5VSPcdy9y8dOUwDQYJKoZIhvcNAQEL
@@ -74,8 +81,6 @@ frontend:
         hz/tEwvwdLIn6sxDvMTkooXCUL9x16kaqATihX2YYIeABrEltKudyk4mIAaPhanv
         1+26YNeZYgZvdwBxtyPm2Gg4lou2
         -----END CERTIFICATE-----
-
-        
       key: |
         -----BEGIN PRIVATE KEY-----
         MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC0Rte/VCSCWTDP
@@ -106,16 +111,12 @@ frontend:
         IQ8au1wfbQSQwKWTAKVD4R5l
         -----END PRIVATE KEY-----
 
-  replicaCount: 1
-  service:
-    port: 80 # Exposed port inside the cluster
-
-  # This tells Nginx where to find the Backend API
-  backendUrl: "http://pirates-backend-backend.pirates-backend-ns.svc.cluster.local:8000"
-  pirates-db:
+# --- DATABASE DEPENDENCY CONFIGURATION ---
+# Must be at the ROOT level (Same as backend/frontend)
+pirates-db:
   auth:
     postgresPassword: "secretpassword"
     database: "pirates_db"
   primary:
     persistence:
-      enabled: false # Keep false for minikube to save disk space
+      enabled: false
