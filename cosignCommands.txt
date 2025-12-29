@@ -1,0 +1,67 @@
+# Docker Hub Account: You need an account at hub.docker.com.
+
+# Private Repository: Create a new repository named pipeline-pirates on Docker Hub and select Private.
+
+# 1. Download the binary
+wget "https://github.com/sigstore/cosign/releases/download/v2.2.3/cosign-linux-amd64"
+
+# 2. Rename and move to bin
+sudo mv cosign-linux-amd64 /usr/local/bin/cosign
+
+# 3. Make executable
+sudo chmod +x /usr/local/bin/cosign
+
+# 4. Verify
+cosign version
+
+# command to generate a private key (to sign) and a public key (to verify).
+
+cosign generate-key-pair
+# It will ask you for a password. Remember this password.
+# It creates two files in your current folder:
+# 1 >>   cosign.key: PRIVATE. Never share this. Add it to .gitignore.
+# 2 >>   cosign.pub: PUBLIC. You can share this (e.g., put it in your K8s cluster to verify signatures).
+
+# Add the private key to your .gitignore immediately so you don't accidentally push it to GitHub.
+echo "cosign.key" >> .gitignore
+
+# Log in to Docker HubLog in to Docker Hub
+docker login
+# Enter your Docker Hub username and password/token
+
+# Backend
+docker tag pipeline-pirates-backend:latest YOUR_DOCKER_USER/pipeline-pirates-backend:v1
+
+# Frontend
+docker tag pipeline-pirates-frontend:latest YOUR_DOCKER_USER/pipeline-pirates-frontend:v1
+
+docker push YOUR_DOCKER_USER/pipeline-pirates-backend:v1
+docker push YOUR_DOCKER_USER/pipeline-pirates-frontend:v1
+
+# After you push to Docker Hub, you need to find the specific sha256 hash of the image.
+# Run this command to inspect your pushed image and grab the "RepoDigest":
+
+docker inspect --format='{{index .RepoDigests 0}}' YOUR_DOCKER_USER/pipeline-pirates-backend:v1
+docker inspect --format='{{index .RepoDigests 0}}' YOUR_DOCKER_USER/pipeline-pirates-frontend:v1
+# Output example: YOUR_DOCKER_USER/pipeline-pirates-backend@sha256:e5b8d9... (long string)
+
+# Sign the Backend
+cosign sign --yes --key cosign.key YOUR_DOCKER_USER/pipeline-pirates-backend@sha256:e5b8d9c0e...
+
+# Sign the Frontend
+cosign sign --yes --key cosign.key YOUR_DOCKER_USER/pipeline-pirates-frontend@sha256:e5b8d9c0e...
+
+
+# verify
+cosign verify --key cosign.pub YOUR_DOCKER_USER/pipeline-pirates-backend@sha256:e5b8d9c0e...
+cosign verify --key cosign.pub YOUR_DOCKER_USER/pipeline-pirates-frontend@sha256:e5b8d9c0e...
+
+# if your verifiy is successful you should see:
+The following checks were performed on each of these signatures:
+  - The cosign claims were validated
+  - Existence of the claims in the transparency log was verified offline
+  - The signatures were verified against the specified public key
+
+
+
+

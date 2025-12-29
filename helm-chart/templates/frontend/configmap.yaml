@@ -1,0 +1,42 @@
+{{- if .Values.frontend.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-frontend-nginx-config
+data:
+  default.conf: |
+    server {
+        listen 8080;
+        server_name localhost;
+        root /usr/share/nginx/html;
+        index index.html;
+
+        # --- FIX: Route Legacy paths to the new API path ---
+        
+        # 1. Catch "/signin" from the browser, proxy to Backend at "/api/signin"
+        location /signin {
+            proxy_pass {{ .Values.frontend.backendUrl }}/api/signin;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        # 2. Catch "/signup" from the browser, proxy to Backend at "/api/signup"
+        location /signup {
+            proxy_pass {{ .Values.frontend.backendUrl }}/api/signup;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+        # ---------------------------------------------------
+
+        # Keep the standard API block just in case
+        location /api/ {
+            proxy_pass {{ .Values.frontend.backendUrl }};
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+    }
+{{- end }}

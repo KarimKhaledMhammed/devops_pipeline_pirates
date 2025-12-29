@@ -1,0 +1,56 @@
+{{- if .Values.backend.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-backend
+  labels:
+    app: {{ .Release.Name }}-backend
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-backend
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-backend
+    spec:
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      containers:
+        - name: backend
+          # Use Digest if provided, otherwise fallback to Tag
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}{{ if .Values.backend.image.digest }}@{{ .Values.backend.image.digest }}{{ end }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          ports:
+            - containerPort: {{ .Values.backend.service.port }}
+          env:
+            - name: DB_HOST
+              value: {{ .Values.backend.env.dbHost | quote }}
+            - name: DB_USER
+              value: {{ .Values.backend.env.dbUser | quote }}
+            - name: DB_NAME
+              value: {{ .Values.backend.env.dbName | quote }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: db-password
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: secret-key
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.backend.service.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 20
+{{- end }}

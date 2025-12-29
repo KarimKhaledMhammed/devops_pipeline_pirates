@@ -1,0 +1,21 @@
+{{- if .Values.backend.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-allow-frontend-to-backend
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Release.Name }}-backend
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ .Release.Name }}-frontend
+      ports:
+        - protocol: TCP
+          port: 8000
+{{- end }}

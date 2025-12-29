@@ -2,7 +2,6 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from . import models, schemas, auth, database
-
 # Create DB tables (simplest migration strategy for this project)
 models.Base.metadata.create_all(bind=database.engine)
 
@@ -26,7 +25,7 @@ def version_check():
     return {"version": "1.0.0"}
 
 # --- Auth Endpoints ---
-@app.post("/signup", response_model=schemas.UserResponse)
+@app.post("/api/signup", response_model=schemas.UserResponse)
 def signup(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     db_user = db.query(models.User).filter(models.User.username == user.username).first()
     if db_user:
@@ -39,7 +38,7 @@ def signup(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     db.refresh(new_user)
     return {"username": new_user.username, "msg": "User created successfully"}
 
-@app.post("/signin", response_model=schemas.Token)
+@app.post("/api/signin", response_model=schemas.Token)
 def signin(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     db_user = db.query(models.User).filter(models.User.username == user.username).first()
     if not db_user or not auth.verify_password(user.password, db_user.hashed_password):

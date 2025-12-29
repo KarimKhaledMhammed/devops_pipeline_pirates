@@ -1,0 +1,57 @@
+# 1. DATABASE POLICY (In pirates-db-ns)
+# Allow traffic ONLY from the Backend Namespace on Port 5432
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-backend-only
+  namespace: pirates-db-ns
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: postgresql
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: pirates-backend-ns # We must label the namespace itself
+      ports:
+        - protocol: TCP
+          port: 5432
+
+---
+# 2. BACKEND POLICY (In pirates-backend-ns)
+# Allow traffic ONLY from Frontend Namespace on Port 8000
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-only
+  namespace: pirates-backend-ns
+spec:
+  podSelector:
+    matchLabels:
+      app: pipeline-pirates-backend
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: pirates-frontend-ns
+      ports:
+        - protocol: TCP
+          port: 8000
+
+---
+# 3. DEFAULT DENY (Optional but Recommended)
+# Block all other traffic in DB namespace not explicitly allowed above
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: pirates-db-ns
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress

@@ -1,0 +1,121 @@
+# Global Docker Hub Credentials
+imagePullSecrets:
+  - name: regcred
+
+# --- BACKEND CONFIGURATION ---
+backend:
+  enabled: true
+  resources:
+    requests:
+      cpu: "100m"   # 0.1 CPU
+      memory: "128Mi"
+    limits:
+      cpu: "500m"   # 0.5 CPU
+      memory: "256Mi"
+
+  # --- ADD THIS: Autoscaling Configuration ---
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 80
+  image:
+    repository: karimkhaled02/pipeline-pirates
+    tag: "backend-v1"
+    # SECURITY: Paste the exact sha256 digest from 'docker inspect' here
+    digest: "sha256:ee4586ff51aa77e4775896274f2d026d54c790a46ad6d9f4ef81591aa77ad271"
+    pullPolicy: Always
+  
+  replicaCount: 1
+  service:
+    port: 8000
+  
+  # Database Connection Details
+  env:
+    # Full DNS name: service-name.namespace.svc.cluster.local
+    dbHost: "pirates-db-postgresql.pirates-db-ns.svc.cluster.local"
+    dbUser: "postgres"
+    dbName: "pirates_db"
+
+# --- FRONTEND CONFIGURATION ---
+frontend:
+  enabled: true
+  image:
+    repository: karimkhaled02/pipeline-pirates
+    tag: "frontend-v2"
+    # SECURITY: Paste the exact sha256 digest here
+    digest: "sha256:a8fccc915b0269bc6eecf96b7c403d14329e581d4978a854037dcd970a98159b"
+    pullPolicy: Always
+  ingress:
+      enabled: true
+      host: "pirates.local"
+      tlsSecret: "pirates-tls-secret"
+      
+      # Paste the RAW (text) content of your files here.
+      # Use the pipe | to allow multi-line strings.
+      certificate: |
+        -----BEGIN CERTIFICATE-----
+        MIIDETCCAfmgAwIBAgIUVIUZZqjNglNfhH5VSPcdy9y8dOUwDQYJKoZIhvcNAQEL
+        BQAwGDEWMBQGA1UEAwwNcGlyYXRlcy5sb2NhbDAeFw0yNTEyMjkwMzQ3NDlaFw0y
+        NjEyMjkwMzQ3NDlaMBgxFjAUBgNVBAMMDXBpcmF0ZXMubG9jYWwwggEiMA0GCSqG
+        SIb3DQEBAQUAA4IBDwAwggEKAoIBAQC0Rte/VCSCWTDPrGSxVnYMACfJlmJeBdlI
+        eLqQXOexGXA/gwt06E0D/WPt9Y9XZeaglgpRryvc68MUZFMdESVk5AusYO3+Az4e
+        mKh64SoMq/Si/wa5ENmqlIeCE36k/e23HBebCrXas6g3jkUHRlXZgDAtSQddKBnQ
+        6F0N68WVq0N9NU2aMuoJhpZ9fBJdflhh+IRPSihCsXvMPW2A32vscFilNNM2g0TA
+        O6+++3Hil+h4jbX3zNYJ+FP+5dIEFIXqNZscJp6a2U1vfwT6t2unJeb65uCyxJ1i
+        pSzCNNB3H/OWS7R0pUBcoxIKZjUDSGD5glMhB+Fr7PhEt2haOAT1AgMBAAGjUzBR
+        MB0GA1UdDgQWBBRkg7ByTmtLfiIQ74SKDDZb7GJopjAfBgNVHSMEGDAWgBRkg7By
+        TmtLfiIQ74SKDDZb7GJopjAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUA
+        A4IBAQCC1fXSMf2X2eIc5Edszck6EvRyu4ENJrwlHa4FObXHaj6gBjSA0JlNxz0q
+        hAXdmipjOcwAurD52AKdlhUIm4Xa4Vn9Nv3YRuuLxl9jfrPSrYcxYagral47g5+6
+        NsCkt/s1YxUCS3kZNKv5kBXzJ8nyvaSe17qPbN5fI7QDtdnty7WkrpdXkyeMxp3d
+        1BgLDFUbCuY41vuJdxlxyD7nXKN5/ObvSq5ZLgvrpRc3OPDRoWvn+y4xLigbcrjO
+        hz/tEwvwdLIn6sxDvMTkooXCUL9x16kaqATihX2YYIeABrEltKudyk4mIAaPhanv
+        1+26YNeZYgZvdwBxtyPm2Gg4lou2
+        -----END CERTIFICATE-----
+
+        
+      key: |
+        -----BEGIN PRIVATE KEY-----
+        MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC0Rte/VCSCWTDP
+        rGSxVnYMACfJlmJeBdlIeLqQXOexGXA/gwt06E0D/WPt9Y9XZeaglgpRryvc68MU
+        ZFMdESVk5AusYO3+Az4emKh64SoMq/Si/wa5ENmqlIeCE36k/e23HBebCrXas6g3
+        jkUHRlXZgDAtSQddKBnQ6F0N68WVq0N9NU2aMuoJhpZ9fBJdflhh+IRPSihCsXvM
+        PW2A32vscFilNNM2g0TAO6+++3Hil+h4jbX3zNYJ+FP+5dIEFIXqNZscJp6a2U1v
+        fwT6t2unJeb65uCyxJ1ipSzCNNB3H/OWS7R0pUBcoxIKZjUDSGD5glMhB+Fr7PhE
+        t2haOAT1AgMBAAECggEASyQmJDEZwJ0Ve9JS7BnqPUlJTDybBq6waQUtWiPnTMma
+        IFbqTRHQnCOfZd2PIDIwpWm0pmR5x20blGHWxMxTRlDJTtHeERzf5RfjTciRYtO/
+        tbrP3g6Yc4HSU5T1mibfUQ3sBus5bo2oxXNO8V/PQ8erDQ0d/SXMUOexda563k1f
+        zlfJJNlRdaConABmOh2TTVMcDFbh+Fe0ol9CUb1W2XPyv67/lRYzlMOEwoTLa21o
+        u7b9UcyOJwExZRgELPrtRFpiN3S12gWzS8AfruRiASxLm8CFLKY07EhGRrQ/riOB
+        j+C4GpZUkMyQVNwzIRsqW6HZyrhybzPrxQo89c74RwKBgQDYI0MPVfkBfEv6HAHq
+        ea+r888jPS5eRrrk+s4RELtKpsFa+f2gbx81/V81aDOM5z/LBhb3TqvuAsWcN38n
+        HjMT0XQ2/JBnX+Su7YWnKCDwZGWTZL90oq1LoOH2IrG1t2oJf3/Qn+2OvP47BOqM
+        26L2R8oy0uv4cq7rFNCny9CJmwKBgQDVhm/r6X7Ddscyc6h1eQT+BUeo/ABkkSwD
+        Jg/QyWseg6L3F+fJD7uB5YfXr0k0aLByHlxdAqNa60NDsdB4f1XaX0VUMXC+vxq2
+        O4FBdF1oxR8wKoFv8O1HDyzNjHMzsUf/Vx2viM2mbsPV2cYC7PG4i9PrIApiN7Sj
+        67MFUyccrwKBgQDR8N5whQfLw5phJNdPlEdo9PecuQ7TEEz1ohCLTv89seBaqD0N
+        myJr5OKYE9EO6ohygkXIjqg+Fn8wEE/4BUOD2o3R4124q9KLf7e0+CuWlU587v1x
+        I5rEvU7/MBAB/FiJRUk3skCjxzwCw/G4RJd0NaNX3rzKpUr2mU9bzYOQRQKBgHFm
+        os5SBebdkFF1J4SsL0CRoUtX+wVuLEfH0SJ7to5QLx637XvVBSqpsomUKHbTGtKg
+        2UD0g7lntSOgri0ww3HkozdhwpUrfY5G8BDJMkrQVg4IpRHEjN/uaUcJTq2ne6ta
+        owN0znOT5CIRNJ6dJIt0h6oaLCmZmDBun3c2gFE1AoGBAIH2MmvsADhGU8aJuFHf
+        oW1R3N7wQf6OdQ5ZinE7JBjS+YY08i9D1P8D7UhaGrB4QTnmoQRoe0N+oh+OPjx0
+        eMwu+VqpJ0nXhA8yOEv1M05CwJAzR+u7517vLIppgzJaj3Oc56zJkXoB+9WfS7Cj
+        IQ8au1wfbQSQwKWTAKVD4R5l
+        -----END PRIVATE KEY-----
+
+  replicaCount: 1
+  service:
+    port: 80 # Exposed port inside the cluster
+
+  # This tells Nginx where to find the Backend API
+  backendUrl: "http://pirates-backend-backend.pirates-backend-ns.svc.cluster.local:8000"
+  pirates-db:
+  auth:
+    postgresPassword: "secretpassword"
+    database: "pirates_db"
+  primary:
+    persistence:
+      enabled: false # Keep false for minikube to save disk space

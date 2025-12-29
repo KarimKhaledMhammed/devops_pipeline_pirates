@@ -1,0 +1,15 @@
+{{- if .Values.frontend.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-backend-proxy
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: ExternalName
+  # This points to the real backend in the OTHER namespace
+  externalName: pirates-backend-backend.pirates-backend-ns.svc.cluster.local
+  ports:
+  - port: 8000
+    protocol: TCP
+    targetPort: 8000
+{{- end }}
