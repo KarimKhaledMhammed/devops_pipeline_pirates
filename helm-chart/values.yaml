@@ -38,7 +38,7 @@ backend:
     port: 8000
   
   env:
-    dbHost: "pipeline-pirates-pirates-db-postgresql" # <--- Updated to match standard Helm alias DNS
+    dbHost: "pipeline-pirates-pirates-db" # <--- Updated to match standard Helm alias DNS
     dbUser: "postgres"
     dbName: "pirates_db"
 
