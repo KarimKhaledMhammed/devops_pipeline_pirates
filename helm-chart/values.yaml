@@ -55,7 +55,7 @@ frontend:
     port: 80
     
   # Tells Nginx where the Backend is
-  backendUrl: "http://pirates-backend-backend.pirates-backend-ns.svc.cluster.local:8000"
+  backendUrl: "http://pipeline-pirates-backend.pipeline-pirates.svc.cluster.local:8000"
 
   ingress:
       enabled: true
