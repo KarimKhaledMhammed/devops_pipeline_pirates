@@ -44,7 +44,7 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: ${{ env.IMAGE_NAME }}:${{ env.TAG }}
+          tags: ${{ env.IMAGE_NAME }}:latest
 
       # 5. Sign the Image
       - name: Sign the Image
@@ -57,4 +57,4 @@ jobs:
           # if you want to keep it private, otherwise remove this flag or keep defaults.
           
       - name: Summary
-        run: echo "Successfully pushed and signed ${{ env.IMAGE_NAME }}:${{ env.TAG }}"
+        run: echo "Successfully pushed and signed ${{ env.IMAGE_NAME }}:latest"
