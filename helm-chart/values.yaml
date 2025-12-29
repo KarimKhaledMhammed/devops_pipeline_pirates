@@ -114,6 +114,9 @@ frontend:
 # --- DATABASE DEPENDENCY CONFIGURATION ---
 # Must be at the ROOT level (Same as backend/frontend)
 pirates-db:
+  enabled: true
+  image:
+    tag: "16.1.0"  # We removed the "-debian-11-r15" part
   auth:
     postgresPassword: "secretpassword"
     database: "pirates_db"
