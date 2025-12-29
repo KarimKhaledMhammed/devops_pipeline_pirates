@@ -116,7 +116,7 @@ frontend:
 pirates-db:
   enabled: true
   image:
-    tag: "16.1.0"  # We removed the "-debian-11-r15" part
+    tag: "16" 
   auth:
     postgresPassword: "secretpassword"
     database: "pirates_db"
