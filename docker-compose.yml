@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # 1. Database Service
+  # [cite_start]Simulates the standalone Helm database you will use in K8s [cite: 5, 20]
+  db:
+    image: postgres:15-alpine
+    container_name: pirates-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: pirates_db
+    ports:
+      - "5432:5432"
+    networks:
+      - pirate-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d pirates_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Backend Service (Python API)
+  # Builds from your 'backend' folder and connects to the 'db' service
+  backend:
+    build: ./backend
+    container_name: pirates-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: db
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: pirates_db
+      SECRET_KEY: "my-super-secure-local-secret-key"
+    ports:
+      - "8000:8000"
+    networks:
+      - pirate-net
+
+  # 3. Frontend Service (Nginx)
+  # Builds from your 'frontend' folder and proxies requests to 'backend'
+  frontend:
+    build: ./frontend
+    container_name: pirates-frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:8080"
+    networks:
+      - pirate-net
+
+networks:
+  pirate-net:
+    driver: bridge

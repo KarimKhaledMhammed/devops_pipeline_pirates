@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline Pirates | Secure Login</title>
+    <style>
+        /* Modern Reset & Base Styles */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); /* Deep Blue Gradient */
+            color: #333;
+        }
+
+        /* Card Container */
+        .card { 
+            background: white; 
+            padding: 2.5rem; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+            width: 100%; 
+            max-width: 400px; 
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover { transform: translateY(-5px); }
+
+        h2 { 
+            text-align: center; 
+            margin-bottom: 1.5rem; 
+            color: #1e3c72; 
+            font-weight: 700;
+        }
+
+        /* Input Styling */
+        .input-group { margin-bottom: 1.2rem; }
+        
+        input { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 2px solid #e1e1e1; 
+            border-radius: 8px; 
+            font-size: 1rem; 
+            transition: border-color 0.3s;
+            outline: none;
+        }
+
+        input:focus { border-color: #2a5298; }
+
+        /* Button Styling */
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background-color: #2a5298; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: background-color 0.3s; 
+            margin-top: 0.5rem;
+        }
+
+        button:hover { background-color: #1e3c72; }
+
+        /* Toggle Link */
+        .switch-text { 
+            text-align: center; 
+            margin-top: 1.5rem; 
+            font-size: 0.9rem; 
+            color: #666; 
+        }
+
+        .switch-text a { 
+            color: #2a5298; 
+            text-decoration: none; 
+            font-weight: 600; 
+        }
+
+        .switch-text a:hover { text-decoration: underline; }
+
+        /* Messages */
+        .message { 
+            margin-top: 1rem; 
+            text-align: center; 
+            font-size: 0.9rem; 
+            padding: 10px; 
+            border-radius: 6px; 
+            display: none; /* Hidden by default */
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2 id="header">Sign In</h2>
+    
+    <div class="input-group">
+        <input type="text" id="username" placeholder="Username" autocomplete="off">
+    </div>
+    <div class="input-group">
+        <input type="password" id="password" placeholder="Password" autocomplete="off">
+    </div>
+    
+    <button onclick="handleSubmit()" id="actionBtn">Sign In</button>
+    
+    <p class="switch-text">
+        <span id="promptText">New here?</span> 
+        <a href="#" onclick="toggleMode()">Create an account</a>
+    </p>
+    
+    <div id="message" class="message"></div>
+</div>
+
+<script>
+    let isSignup = false;
+
+    // Toggle between Sign In and Sign Up views
+    function toggleMode(preserveMessage = false) {
+        isSignup = !isSignup;
+        
+        // Update UI Text
+        document.getElementById("header").innerText = isSignup ? "Create Account" : "Sign In";
+        document.getElementById("actionBtn").innerText = isSignup ? "Sign Up" : "Sign In";
+        
+        const promptText = isSignup ? "Already have an account?" : "New here?";
+        const linkText = isSignup ? "Sign In" : "Create an account";
+        document.querySelector(".switch-text").innerHTML = `${promptText} <a href="#" onclick="toggleMode()">${linkText}</a>`;
+
+        // Clear Inputs
+        clearInputs();
+
+        // Clear message unless we specifically asked to keep it (e.g., after success)
+        if (!preserveMessage) {
+            hideMessage();
+        }
+    }
+
+    function clearInputs() {
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+    }
+
+    function showMessage(text, type) {
+        const msgDiv = document.getElementById("message");
+        msgDiv.innerText = text;
+        msgDiv.className = "message " + type;
+    }
+
+    function hideMessage() {
+        const msgDiv = document.getElementById("message");
+        msgDiv.className = "message";
+        msgDiv.innerText = "";
+    }
+
+    async function handleSubmit() {
+        const usernameInput = document.getElementById("username");
+        const passwordInput = document.getElementById("password");
+        
+        const username = usernameInput.value;
+        const password = passwordInput.value;
+        const endpoint = isSignup ? "/signup" : "/signin";
+
+        // Basic validation
+        if(!username || !password) {
+            showMessage("Please enter both username and password.", "error");
+            return;
+        }
+
+        try {
+            const response = await fetch(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                if (isSignup) {
+                    // 1. Show Success Message
+                    // 2. Clear inputs immediately so user can't reuse them by mistake
+                    // 3. Switch to Sign In mode automatically, but KEEP the success message visible
+                    toggleMode(true); 
+                    showMessage("User signed successfully! Please log in.", "success");
+                } else {
+                    // Sign In Success
+                    showMessage("Login Successful! Access Token received.", "success");
+                    console.log("Token:", data.access_token);
+                    clearInputs();
+                }
+            } else {
+                showMessage(data.detail || "Error occurred", "error");
+            }
+        } catch (error) {
+            showMessage("Network Error: Is the backend running?", "error");
+        }
+    }
+</script>
+
+</body>
+</html>

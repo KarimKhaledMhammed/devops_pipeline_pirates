@@ -1,0 +1,77 @@
+Safety 3.7.0 scanning /home/karim/pipeline-pirates
+2025-12-29 01:14:49 UTC
+
+Account: Kareem Khaled, kamara551997@gmail.com 
+ Environment: Stage.development
+ Scan policy: None, using Safety CLI default policies
+
+Python detected. Found 1 Python environment, 2 Python pyproject.toml files and 1 Python requirement file
+
+✅ venv/pyvenv.cfg: No issues found.
+
+✅ venv/lib/python3.12/site-packages/stevedore/example/pyproject.toml: No issues found.
+
+✅ venv/lib/python3.12/site-packages/stevedore/example2/pyproject.toml: No issues found.
+
+Dependency vulnerabilities detected:
+
+📝 backend/requirements.txt:
+
+ fastapi==0.109.0 [2 vulnerabilities found]                                                              
+  -> Vuln ID 65293: CVE-2024-24762, CVSS Severity HIGH                                                   
+     Fastapi 0.109.1 updates its minimum version of 'python-multipart' to >=0.0.7 to include a security  
+     fix.                                                                                                
+  -> Vuln ID 64930:                                                                                      
+     FastAPI 0.109.1 addresses a critical security issue by upgrading its dependency python-multipart to 
+     version >=...                                                                                       
+ Update fastapi==0.109.0 to fastapi==0.109.1 to fix 2 vulnerabilities                                    
+ Versions of fastapi with no known vulnerabilities: 0.128.0, 0.127.1, 0.127.0, 0.126.0, 0.125.0, 0.124.4,
+ 0.124.3, 0.124.2, 0.124.1, 0.124.0, 0.123.10, 0.123.9, 0.123.8, 0.123.7, 0.123.6, 0.123.5, 0.123.4,     
+ 0.123.3, 0.123.2, 0.123.1, 0.123.0, 0.122.1, 0.122.0, 0.121.3, 0.121.2, 0.121.1, 0.121.0, 0.120.4,      
+ 0.120.3, 0.120.2, 0.120.1, 0.120.0, 0.119.1, 0.119.0, 0.118.3, 0.118.2, 0.118.1, 0.118.0, 0.117.1,      
+ 0.117.0, 0.116.2, 0.116.1, 0.116.0, 0.115.14, 0.115.13, 0.115.12, 0.115.11, 0.115.10, 0.115.9, 0.115.8, 
+ 0.115.7, 0.115.6, 0.115.5, 0.115.4, 0.115.3, 0.115.2, 0.115.1, 0.115.0, 0.114.2, 0.114.1, 0.114.0,      
+ 0.113.0, 0.112.4, 0.112.3, 0.112.2, 0.112.1, 0.112.0, 0.111.1, 0.111.0, 0.111.0.dev1, 0.110.3,          
+ 0.110.3.dev2, 0.110.3.dev1, 0.110.2, 0.110.1, 0.110.0, 0.109.2                                          
+ Learn more: https://data.safetycli.com/p/pypi/fastapi/eda/?from=0.109.0&to=0.109.1                      
+
+ python-jose==3.3.0 [2 vulnerabilities found]                                                            
+  -> Vuln ID 70715: CVE-2024-33663, CVSS Severity HIGH                                                   
+     Affected versions of Python-jose have a algorithm confusion vulnerability with OpenSSH ECDSA keys   
+     and other ke...                                                                                     
+  -> Vuln ID 70716: CVE-2024-33664, CVSS Severity MEDIUM                                                 
+     Affected versions of Python-jose allow attackers to cause a denial of service (resource consumption)
+     during a ...                                                                                        
+ Update python-jose==3.3.0 to python-jose==3.4.0 to fix 2 vulnerabilities                                
+ Versions of python-jose with no known vulnerabilities: 3.5.0                                            
+ Learn more: https://data.safetycli.com/p/pypi/python-jose/eda/?from=3.3.0&to=3.4.0                      
+
+ python-multipart==0.0.6 [2 vulnerabilities found]                                                       
+  -> Vuln ID 74427:                                                                                      
+     Affected versions of python-multipart are vulnerable to Allocation of Resources Without Limits or   
+     Throttling (...                                                                                     
+  -> Vuln ID 66706:                                                                                      
+     A vulnerability in versions of python-multipart before 0.0.7 involves a Regular Expression Denial of
+     Service (...                                                                                        
+ Update python-multipart==0.0.6 to python-multipart==0.0.18 to fix 2 vulnerabilities                     
+ Versions of python-multipart with no known vulnerabilities: 0.0.21, 0.0.20, 0.0.19                      
+ Learn more: https://data.safetycli.com/p/pypi/python-multipart/eda/?from=0.0.6&to=0.0.18                
+
+---------------------------------------------------------------------------------------------------------
+Apply Fixes
+---------------------------------------------------------------------------------------------------------
+
+Run `safety scan --apply-fixes` to update these packages and fix these vulnerabilities. Documentation, 
+limitations, and configurations for applying automated fixes: 
+https://docs.safetycli.com/safety-docs/vulnerability-remediation/applying-fixes
+
+Alternatively, use your package manager to update packages to their secure versions. Always check for 
+breaking changes when updating packages.
+Tip: For more detailed output on each vulnerability, add the `--detailed-output` flag to safety scan.
+
+---------------------------------------------------------------------------------------------------------
+
+Tested 54 dependencies for security issues using default Safety CLI policies
+8 vulnerabilities found, 2 ignored due to policy.
+3 fixes suggested, resolving 6 vulnerabilities.
+

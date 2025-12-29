@@ -1,0 +1,13 @@
+# Updated to fix CVE-2024-47874 (Starlette) & CVE-2024-24762 (Multipart)
+fastapi>=0.115.0
+uvicorn>=0.30.0
+sqlalchemy>=2.0.30
+psycopg2-binary>=2.9.9
+passlib[bcrypt]==1.7.4
+bcrypt==4.2.0
+
+# REPLACED: python-jose (Critical Vuln) -> PyJWT (Secure)
+pyjwt==2.9.0
+
+# Updated to fix CVE-2024-53981
+python-multipart>=0.0.18

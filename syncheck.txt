@@ -1,0 +1,12 @@
+F401 [*] `jose.JWTError` imported but unused
+ --> backend/app/auth.py:2:18
+  |
+1 | from passlib.context import CryptContext
+2 | from jose import JWTError, jwt
+  |                  ^^^^^^^^
+3 | from datetime import datetime, timedelta
+  |
+help: Remove unused import: `jose.JWTError`
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.

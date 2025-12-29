@@ -1,0 +1,17 @@
+sudo apt install python3-venv
+
+cd ~/path/to/pipeline-pirates #lazem tkon fe el dir bta3 el project
+
+python3 -m venv venv
+
+source venv/bin/activate
+
+pip install ruff bandit safety
+
+ruff check backend/app # Check code style/errors
+
+bandit -r backend/app # Check for hardcoded secrets/security flaws
+
+safety check -r backend/requirements.txt # Check dependencies for known hacks
+
+deactivate   # When you are done working, you can leave the virtual environment
