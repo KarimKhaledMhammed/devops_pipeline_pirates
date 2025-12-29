@@ -6,8 +6,8 @@ imageCredentials:
   email: "Karimkhaledmohammed@gmail.com"
 
 # This tells Pods to USE the secret we created
-imagePullSecrets:
-  - name: regcred
+# imagePullSecrets:
+#   - name: regcred
 
 # --- BACKEND CONFIGURATION ---
 backend:
@@ -115,8 +115,8 @@ frontend:
 # Must be at the ROOT level (Same as backend/frontend)
 pirates-db:
   enabled: true
-  image:
-    tag: "16-debian-11"
+  tag: "latest"      # <--- Switch to latest to force a find
+  pullSecrets: []
   auth:
     postgresPassword: "secretpassword"
     database: "pirates_db"
