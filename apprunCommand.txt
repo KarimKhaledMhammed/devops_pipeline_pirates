@@ -6,9 +6,11 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 
 kubectl port-forward svc/pirate-monitor-grafana -n monitoring 3000:80
 
-Your App: http://pirates.local (or the IP from the tunnel)
+Your App: https://pirates.local (or the IP from the tunnel)
 
     Try logging in—your user data should still be there thanks to the persistence fix!
+
+    kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 
 ArgoCD: https://localhost:8080
 

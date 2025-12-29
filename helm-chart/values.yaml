@@ -125,4 +125,5 @@ pirates-db:
     persistence:
       enabled: true    # <--- CHANGE THIS TO TRUE ✅
       size: 1Gi
+      reclaimPolicy: Retain
       mountPath: /bitnami/postgresql
