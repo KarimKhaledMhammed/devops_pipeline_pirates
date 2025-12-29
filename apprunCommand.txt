@@ -1,0 +1,19 @@
+minikube start
+
+minikube tunnel
+
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+kubectl port-forward svc/pirate-monitor-grafana -n monitoring 3000:80
+
+Your App: http://pirates.local (or the IP from the tunnel)
+
+    Try logging in—your user data should still be there thanks to the persistence fix!
+
+ArgoCD: https://localhost:8080
+
+    Check if all "Hearts" are green.
+
+Grafana: http://localhost:3000
+
+    Check if your dashboards are showing data.
