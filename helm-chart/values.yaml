@@ -123,4 +123,5 @@ pirates-db:
     database: "pirates_db"
   primary:
     persistence:
-      enabled: false
+      enabled: true    # <--- CHANGE THIS TO TRUE ✅
+      size: 1Gi
