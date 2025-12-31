@@ -38,10 +38,16 @@ backend:
     port: 8000
   
   env:
-    dbHost: "pipeline-pirates-pirates-db" # <--- Updated to match standard Helm alias DNS
-    dbUser: "postgres"
-    dbName: "pirates_db"
-
+    - name: DB_HOST
+      value: "pipeline-pirates-pirates-db"
+    - name: DB_NAME
+      value: "pirates_db"
+    - name: DB_USER
+      value: "postgres"
+    - name: DATABASE_URL  # <--- ADD THIS EXPLICITLY ✅
+      value: "postgresql://postgres:secretpassword@pipeline-pirates-pirates-db:5432/pirates_db"
+    - name: SQLALCHEMY_DATABASE_URL # Often used by FastAPI/SQLAlchemy
+      value: "postgresql://postgres:secretpassword@pipeline-pirates-pirates-db:5432/pirates_db"
 # --- FRONTEND CONFIGURATION ---
 frontend:
   enabled: true
