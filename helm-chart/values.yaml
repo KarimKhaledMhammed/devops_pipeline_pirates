@@ -42,7 +42,7 @@ backend:
     dbHost: "pipeline-pirates-pirates-db"
     dbUser: "postgres"
     dbName: "pirates_db"
-    # We add these new keys to force the app to use Postgres
+    dbType: "postgres"
     databaseUrl: "postgresql://postgres:secretpassword@pipeline-pirates-pirates-db:5432/pirates_db"
     sqlalchemyDatabaseUrl: "postgresql://postgres:secretpassword@pipeline-pirates-pirates-db:5432/pirates_db"
 # --- FRONTEND CONFIGURATION ---
@@ -115,11 +115,10 @@ frontend:
         -----END PRIVATE KEY-----
 
 # --- DATABASE DEPENDENCY CONFIGURATION ---
-# Must be at the ROOT level (Same as backend/frontend)
 pirates-db:
   enabled: true
   image:
-    tag: "latest"      # <--- Switch to latest to force a find
+    tag: "latest"     
     pullSecrets: []
   auth:
     postgresPassword: "secretpassword"
@@ -131,7 +130,7 @@ pirates-db:
     containerSecurityContext:
       runAsUser: 1001
     persistence:
-      enabled: true    # <--- CHANGE THIS TO TRUE ✅
+      enabled: true    
       size: 1Gi
       reclaimPolicy: Retain
       mountPath: /bitnami/postgresql

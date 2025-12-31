@@ -31,6 +31,8 @@ spec:
           ports:
             - containerPort: {{ .Values.backend.service.port }}
           env:
+            - name: DB_TYPE
+              value: {{ .Values.backend.env.dbType | quote }}
             - name: DB_HOST
               value: {{ .Values.backend.env.dbHost | quote }}
             - name: DB_USER

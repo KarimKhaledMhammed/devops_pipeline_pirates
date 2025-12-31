@@ -19,3 +19,15 @@ ArgoCD: https://localhost:8080
 Grafana: http://localhost:3000
 
     Check if your dashboards are showing data.
+
+
+
+
+
+kubectl exec -it pipeline-pirates-pirates-db-0 -n pipeline-pirates -- psql -U postgres -d pirates_db
+
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
