@@ -37,6 +37,10 @@ spec:
               value: {{ .Values.backend.env.dbUser | quote }}
             - name: DB_NAME
               value: {{ .Values.backend.env.dbName | quote }}
+            - name: DATABASE_URL
+              value: {{ .Values.backend.env.databaseUrl | quote }}
+            - name: SQLALCHEMY_DATABASE_URL
+              value: {{ .Values.backend.env.sqlalchemyDatabaseUrl | quote }}
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
