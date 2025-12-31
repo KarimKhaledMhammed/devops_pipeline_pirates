@@ -36,9 +36,7 @@ backend:
   replicaCount: 1
   service:
     port: 8000
-  
   env:
-    env:
     dbHost: "pipeline-pirates-pirates-db"
     dbUser: "postgres"
     dbName: "pirates_db"
