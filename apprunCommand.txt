@@ -26,6 +26,10 @@ Grafana: http://localhost:3000
 
 kubectl exec -it pipeline-pirates-pirates-db-0 -n pipeline-pirates -- psql -U postgres -d pirates_db
 
+SELECT * FROM users;
+
+
+
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
