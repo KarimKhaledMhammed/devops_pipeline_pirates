@@ -1,3 +1,4 @@
 cosign.key
 venv/
 __pycache__/
+tls.key
