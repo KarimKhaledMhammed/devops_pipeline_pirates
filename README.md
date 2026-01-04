@@ -1,5 +1,7 @@
 # Pipeline Pirates 🏴‍☠️
 
+![Architecture diagram](screenshots/architecture.jpeg "Deployment & CI/CD architecture")
+
 **Pipeline Pirates** is a demo full-stack application showcasing a FastAPI backend, a static frontend served by Nginx, containerized deployments, and a Helm chart for Kubernetes/Minikube. This repository includes local developer tooling, security scanning artifacts, and deployment automation for a small but realistic app.
 
 ---
