@@ -4,41 +4,60 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'app/**'          # Only run if backend code changes
-      - 'Dockerfile'      # Or if the Dockerfile changes
+      - 'backend/**'
+      - 'Dockerfile'
       - '.github/workflows/**'
 
 env:
-  # Image Name
   IMAGE_NAME: karimkhaled02/pipeline-pirates
-  # We use the GitHub Run ID (e.g., 15, 16) as the version tag automatically!
   TAG: backend-v${{ github.run_number }}
 
 jobs:
+  # JOB 1: Code Quality Scan 🔍
+  sonar-scan:
+    name: SonarCloud Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required: SonarCloud needs full git history
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub provides this automatically
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}    # You just added this
+        with:
+          args: >
+            -Dsonar.organization=karimkhaledmhammed
+            -Dsonar.projectKey=KarimKhaledMhammed_devops_pipeline_pirates
+            -Dsonar.sources=backend
+            -Dsonar.python.version=3.11
+            -Dsonar.verbose=true
+
+  # JOB 2: Build & Sign (Only runs if Scan passes) 🏗️
   build-and-sign:
+    needs: sonar-scan  # Wait for SonarCloud to finish successfully!
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-      id-token: write # Needed for Cosign identity (optional but good practice)
+      id-token: write
 
     steps:
-      # 1. Checkout the code
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Login to Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 3. Install Cosign
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.3.0
 
-      # 4. Build and Push the Image
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
@@ -46,15 +65,12 @@ jobs:
           push: true
           tags: ${{ env.IMAGE_NAME }}:backend-latest
 
-      # 5. Sign the Image
       - name: Sign the Image
         run: |
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY "${{ env.IMAGE_NAME }}:backend-latest"
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
-          # "tlog-upload: false" avoids uploading to the public transparency log 
-          # if you want to keep it private, otherwise remove this flag or keep defaults.
-          
+
       - name: Summary
-        run: echo "Successfully pushed and signed ${{ env.IMAGE_NAME }}:latest"
+        run: echo "Successfully scanned code, pushed, and signed ${{ env.IMAGE_NAME }}:latest"
