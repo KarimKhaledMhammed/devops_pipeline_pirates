@@ -73,4 +73,4 @@ jobs:
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
 
       - name: Summary
-        run: echo "Successfully scanned, pushed, and signed ${{ env.IMAGE_NAME }}:latest"
+        run: echo "Successfully scanned code, pushed, and signed ${{ env.IMAGE_NAME }}:latest"
