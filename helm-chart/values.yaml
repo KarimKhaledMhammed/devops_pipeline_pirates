@@ -33,7 +33,7 @@ backend:
     tag: "backend-latest"
     pullPolicy: Always
   
-  replicaCount: 1
+  replicaCount: 2
   service:
     port: 8000
   env:
@@ -51,7 +51,7 @@ frontend:
     tag: "frontend-latest"
     pullPolicy: Always
   
-  replicaCount: 1
+  replicaCount: 2
   service:
     port: 80
     
